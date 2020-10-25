@@ -21,13 +21,14 @@ bool HelloWorld::init()
 	boy->setPosition(Vec2(visibleSize->width / 2, visibleSize->height / 2));
 	boy->setScale(2.0);
 	this->addChild(boy);
+	animateStop = SpriteFrame::create("boy.png", Rect(30, 25, 35, 75));
 
 	Vector <SpriteFrame*> animFrames;
 	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(365, 122, 43, 78)));
 	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(408, 122, 46, 75)));
 	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(465, 122, 43, 73)));
 	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(514, 121, 44, 79)));
-	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(560, 121, 41, 79)));	
+	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(560, 121, 41, 79)));
 	auto animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
 	animation->setLoops(-1);
 	animate = Animate::create(animation);
@@ -39,6 +40,17 @@ bool HelloWorld::init()
 	auto animationFastMove = Animation::createWithSpriteFrames(animFramesFastMove, 0.1f);
 	animationFastMove->setLoops(-1);
 	animateFastMove = Animate::create(animationFastMove);
+	Vector <SpriteFrame*> animFramesDown;
+	animFramesDown.pushBack(SpriteFrame::create("boy.png", Rect(210, 237, 66, 53)));
+	auto animationDown = Animation::createWithSpriteFrames(animFramesDown, 0.1f);
+	animationDown->setLoops(-1);
+	animateDown = Animate::create(animationDown);
+
+	Vector <SpriteFrame*> animFramesJump;
+	animFrames.pushBack(SpriteFrame::create("boy.png", Rect(30, 25, 35, 75)));
+	auto animationJump = Animation::createWithSpriteFrames(animFramesJump, 0.1f);
+	animationJump->setLoops(-1);
+	animateJump = Animate::create(animationJump);
 
 	auto listener = EventListenerKeyboard::create();
 	listener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
@@ -48,6 +60,8 @@ bool HelloWorld::init()
 
 	animate->retain();
 	animateFastMove->retain();
+	animateDown->retain();
+
 	this->scheduleUpdate();
 	return true;
 }
@@ -69,12 +83,20 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 	if ((int)keyCode == 27 && !isMove) {
 		r_move = true;
 		isMove = true;
-		boy->runAction(animate);
+		if (!b_move)
+			boy->runAction(animate);
 	}
 	if ((int)keyCode == 26 && !isMove) {
 		l_move = true;
 		isMove = true;
-		boy->runAction(animate);
+		if (!b_move)
+			boy->runAction(animate);
+	}
+	if ((int)keyCode == 29 && isMove)
+	{
+		b_move = true;
+		boy->stopAction(animate);
+		boy->runAction(animateDown);
 	}
 	if ((int)keyCode == 59) {
 		jumpBy = JumpBy::create(0.5, Vec2(0, 0), 50, 1);
@@ -106,6 +128,12 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 	if ((int)keyCode == 12) {
 		pixelCount = 3;
 		boy->stopAction(animateFastMove);
+		boy->setSpriteFrame(animateStop);
+	}
+	if ((int)keyCode == 29)
+	{
+		b_move = false;
+		boy->stopAction(animateDown);
 		boy->setSpriteFrame(animateStop);
 	}
 }

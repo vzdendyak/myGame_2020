@@ -1,5 +1,6 @@
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
+#include "ui/CocosGUI.h";
 #include "cocos2d.h";
 class HelloWorld : public cocos2d::Layer
 {
@@ -16,8 +17,9 @@ private:
 	cocos2d::Animate* animate;
 	cocos2d::Animate* animateJump;
 	cocos2d::Animate* animateFastMove;
+	cocos2d::Animate* animateDown;
 	cocos2d::SpriteFrame* animateStop;
 
-	bool r_move = false, l_move = false, isMove = false;
+	bool r_move = false, l_move = false, b_move = false, isMove = false;
 };
 #endif // __HELLOWORLD_SCENE_H__
